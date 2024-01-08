@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { cache } from "hono/cache";
 import { AwsClient } from "aws4fetch";
 
 const app = new Hono<{
@@ -18,6 +19,14 @@ const initAwsClient = (accessKey: string, secretKey: string) => {
     service: "s3",
   });
 };
+
+app.get(
+  "*",
+  cache({
+    cacheName: "pawdew-proxy",
+    cacheControl: "max-age=86400",
+  })
+);
 
 app.get("/", (c) => {
   return c.json({
